@@ -119,6 +119,7 @@ main(int argc, char *const argv[])
 	struct shm	     shm;
 	size_t		     sz = 0;
 	char		     envout[PATH_MAX + 8];
+	char		     envopts[512];
 	const unsigned char *opts;
 	char *		     bopts;
 	int		     verr;
@@ -144,6 +145,8 @@ main(int argc, char *const argv[])
 		fatal("allocating shared memory (%d)", err);
 	snprintf(envout, sizeof(envout), ENVOUT "=%s", out);
 	putenv(envout);
+	snprintf(envopts, sizeof(envopts), ENVOPTS "=%s", argv[1]);
+	putenv(envopts);
 	workaround(out);
 	fflush(stdout);
 	opts = (const unsigned char *)argv[1];
@@ -185,11 +188,13 @@ main(int argc, char *const argv[])
 				aerror(nargs, args,
 				    "command failed with code %d", rc);
 		}
-		if (strcmp(argv[3], "---")) {
-			uniq(s_buf, &sz, shm.buf + 4 + 256, "", 0);
-			dump(out, s_buf, sz);
-		} else
-			dump(out, shm.buf + 4 + 256, *(uint32_t *)shm.buf);
+		if (procUsesShm()) {
+			if (strcmp(argv[3], "---")) {
+				uniq(s_buf, &sz, shm.buf + 4 + 256, "", 0);
+				dump(out, s_buf, sz);
+			} else
+				dump(out, shm.buf + 4 + 256, *(uint32_t *)shm.buf);
+		}
 	}
 	if ((err = shmTerm(&shm, 1)))
 		error("freeing shared memory (%d)", err);

@@ -11,3 +11,4 @@ enum procerr {
 void	     procPath(char *);
 void	     procDumpArgs(unsigned, char *const[]);
 enum procerr procRun(unsigned, char *const[], int *);
+int	     procUsesShm(void);

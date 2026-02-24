@@ -143,3 +143,9 @@ procRun(unsigned xnargs, char *const xargs[], int *rc)
 		*rc = drc;
 	return err;
 }
+
+int
+procUsesShm(void)
+{
+	return 1;
+}

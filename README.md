@@ -49,9 +49,11 @@ Options is a combination of the following characters:
 
 ## macOS usage
 
-In order to use `fsatrace` on systems newer than OS X 10.10, System Integrity Protection must be disabled as detailed in https://developer.apple.com/library/content/documentation/Security/Conceptual/System_Integrity_Protection_Guide/ConfiguringSystemIntegrityProtection/ConfiguringSystemIntegrityProtection.html
+On macOS, `fsatrace` now defaults to a `dtruss`-based backend instead of
+`DYLD_INSERT_LIBRARIES`, so it can run with SIP enabled.
 
-Use at your own risk!
+Use `FSAT_BACKEND=preload` to force the old interposition backend.
+If `dtruss` is unavailable, `fsatrace` automatically falls back to preload.
 
 ## Output format
 
