@@ -1,3 +1,6 @@
+#ifndef FSATRACE_PROC_H
+#define FSATRACE_PROC_H
+
 enum procerr {
 	ERR_PROC_OK,
 	ERR_PROC_FORK,
@@ -12,3 +15,5 @@ void	     procPath(char *);
 void	     procDumpArgs(unsigned, char *const[]);
 enum procerr procRun(unsigned, char *const[], int *);
 int	     procUsesShm(void);
+
+#endif

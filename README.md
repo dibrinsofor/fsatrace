@@ -49,11 +49,14 @@ Options is a combination of the following characters:
 
 ## macOS usage
 
-On macOS, `fsatrace` now defaults to a `dtruss`-based backend instead of
-`DYLD_INSERT_LIBRARIES`, so it can run with SIP enabled.
+On macOS, `fsatrace` defaults to an LLDB-based tracer backend, so it can run
+with SIP enabled.
 
-Use `FSAT_BACKEND=preload` to force the old interposition backend.
-If `dtruss` is unavailable, `fsatrace` automatically falls back to preload.
+Backend selection is controlled by `FSAT_BACKEND`:
+- `lldb` (default): LLDB Python tracer, no preload interposition.
+- `preload`: force `DYLD_INSERT_LIBRARIES` interposition.
+- `auto`: use SIP detection to choose LLDB for protected binaries, preload for
+  non-protected binaries.
 
 ## Output format
 

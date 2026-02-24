@@ -1,5 +1,9 @@
 SOSRCS=src/unix/fsatraceso.c src/emit.c src/unix/shm.c src/unix/proc.c
 
+ifeq ($(OS),Darwin)
+SOSRCS+=src/darwin/sip_detect.c src/darwin/lldb.c
+endif
+
 lib: fsatrace.so
 
 %.os: %.c

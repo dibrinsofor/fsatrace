@@ -26,6 +26,10 @@ ifeq ($(OS),Linux)
 LDLIBS=-ldl -lrt
 endif
 
+ifeq ($(OS),Darwin)
+OSSRCS+=src/darwin/sip_detect.c src/darwin/lldb.c
+endif
+
 INSTALLDIR=$(HOME)/.local/bin
 
 endif

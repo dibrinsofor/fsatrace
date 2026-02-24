@@ -122,9 +122,11 @@ main(int argc, char *const argv[])
 	char		     envopts[512];
 	const unsigned char *opts;
 	char *		     bopts;
+	unsigned char	     localopts[256] = { 0 };
 	int		     verr;
 	char *const *	     args = argv + 4;
 	unsigned	     nargs = argc - 4;
+	int		     use_shm = 0;
 
 	static char s_buf[LOGSZ];
 
@@ -141,16 +143,17 @@ main(int argc, char *const argv[])
 		    "   q: dump file stat operations\n",
 		    argv[0]);
 	out = argv[2];
-	if ((err = shmInit(&shm, out, LOGSZ, 1)))
-		fatal("allocating shared memory (%d)", err);
 	snprintf(envout, sizeof(envout), ENVOUT "=%s", out);
 	putenv(envout);
 	snprintf(envopts, sizeof(envopts), ENVOPTS "=%s", argv[1]);
 	putenv(envopts);
 	workaround(out);
 	fflush(stdout);
+	use_shm = procUsesShm();
+	if (use_shm && (err = shmInit(&shm, out, LOGSZ, 1)))
+		fatal("allocating shared memory (%d)", err);
 	opts = (const unsigned char *)argv[1];
-	bopts = shm.buf + 4;
+	bopts = use_shm ? shm.buf + 4 : (char *)localopts;
 	while (*opts)
 		bopts[*opts++] = 1;
 
@@ -188,7 +191,7 @@ main(int argc, char *const argv[])
 				aerror(nargs, args,
 				    "command failed with code %d", rc);
 		}
-		if (procUsesShm()) {
+		if (use_shm) {
 			if (strcmp(argv[3], "---")) {
 				uniq(s_buf, &sz, shm.buf + 4 + 256, "", 0);
 				dump(out, s_buf, sz);
@@ -196,7 +199,7 @@ main(int argc, char *const argv[])
 				dump(out, shm.buf + 4 + 256, *(uint32_t *)shm.buf);
 		}
 	}
-	if ((err = shmTerm(&shm, 1)))
+	if (use_shm && (err = shmTerm(&shm, 1)))
 		error("freeing shared memory (%d)", err);
 	return rc;
 }
